@@ -1,7 +1,5 @@
 package com.calliduslynx.checky
 
-import java.util.concurrent.atomic.AtomicInteger
-
 // ******************************************************
 // ***** external api ***********************************
 // ******************************************************
@@ -45,7 +43,7 @@ class CheckOut(vararg rules: Rule) {
   /**
    * a simple map to count the items (is only used for items with saving)
    */
-  private val countPerItem = mutableMapOf<String, AtomicInteger>()
+  private val countPerItem = mutableMapOf<String, Int>()
 
   /**
    * holds current total
@@ -67,10 +65,10 @@ class CheckOut(vararg rules: Rule) {
   }
 
   private fun handleSaving(item: String, saving: Saving) {
-    val count = countPerItem.getOrPut(item, { AtomicInteger(0) }).incrementAndGet() // increase counter for item and get value
-    if (count == saving.count) {                                                    // check if there are enough items for a saving
+    countPerItem[item] = 1 + (countPerItem[item] ?: 0)
+    if (countPerItem[item] == saving.count) {                                       // check if there are enough items for a saving
       currentTotal -= saving.difference                                             // reduce by difference
-      countPerItem[item]!!.set(0)                                                   // reset counter
+      countPerItem[item] = 0                                                        // reset counter
     }
   }
 
